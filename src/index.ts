@@ -1,6 +1,6 @@
 import { nodeFs } from '@file-services/node';
 import { safeListeningHttpServer } from 'create-listening-server';
-import type { IFileSystem } from '@file-services/types';
+import type { IFileSystem, WatchEventListener } from '@file-services/types';
 import { findCacheDir } from './find-cache-dir';
 
 interface PortsParameters {
@@ -20,6 +20,7 @@ export class Ports {
   private fs: IFileSystem;
   private rootDir: string;
   private initialEdges: { start: number; end: number; reached: boolean };
+  private watchListener: WatchEventListener;
 
   constructor({ startPort = 8000, endPort = 9000 }: PortsParameters = {}, options: PortsOptions = {}) {
     this.start = startPort;
@@ -40,6 +41,13 @@ export class Ports {
     }
 
     this.portsPath = this.fs.resolve(tempDir, 'ports');
+
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    this.watchListener = async () => {
+      this.visitedPorts = await this.getPersistentPorts();
+    };
+
+    void this.fs.watchService.watchPath(this.portsPath, this.watchListener);
   }
 
   /**
@@ -63,7 +71,7 @@ export class Ports {
 
     await new Promise((resolve, reject) => httpServer.close((error) => (error ? reject(error) : resolve(void 0))));
 
-    await this.updateEdges(port);
+    this.updateEdges(port);
 
     return port;
   }
@@ -77,7 +85,6 @@ export class Ports {
     await this.updatePersistentPorts((ports) => {
       for (const port of [...(currentPorts ?? this.visitedPorts)]) {
         ports.delete(port);
-        this.visitedPorts.delete(port);
       }
     });
   }
@@ -89,29 +96,38 @@ export class Ports {
    * @param port - the port to mark as used
    */
   public async setPort(port: number) {
-    this.visitedPorts.add(port);
     await this.updatePersistentPorts((ports) => {
       ports.add(port);
     });
   }
 
+  /**
+   * Remove releases all the ports.
+   */
   public async clean() {
     this.visitedPorts.clear();
     await this.fs.promises.rm(this.portsPath, { force: true });
   }
 
+  /**
+   * Unwatch ports changes
+   */
+  public dispose() {
+    return this.fs.watchService.unwatchPath(this.portsPath, this.watchListener);
+  }
+
   private async getPort() {
-    const port = await this.getNextPort();
+    const port = this.getNextPort();
 
     await this.setPort(port);
 
     return port;
   }
 
-  private async getNextPort(): Promise<number> {
+  private getNextPort(): number {
     let port = randomNumberBetween(this.start, this.end);
 
-    while ((await this.getPersistentPorts()).has(port)) {
+    while (this.visitedPorts.has(port)) {
       port = randomNumberBetween(this.start, this.end);
     }
 
@@ -123,8 +139,6 @@ export class Ports {
     const newPorts = new Set(ports);
 
     await callback(newPorts);
-
-    await this.fs.promises.ensureDirectory(this.portsPath);
 
     for (const port of ports) {
       if (newPorts.has(port)) {
@@ -138,31 +152,32 @@ export class Ports {
     await Promise.all(
       [...newPorts].map((port) => this.fs.promises.writeFile(this.fs.join(this.portsPath, String(port)), ''))
     );
+
+    this.visitedPorts = await this.getPersistentPorts();
   }
 
-  private async getPersistentPorts(): Promise<Set<number>> {
+  private async getPersistentPorts() {
     await this.fs.promises.ensureDirectory(this.portsPath);
-    this.visitedPorts = new Set((await this.fs.promises.readdir(this.portsPath)).map(Number));
-    return this.visitedPorts;
+    return this.fs.promises.readdir(this.portsPath).then((files) => new Set(files.map((file) => Number(file))));
   }
 
-  private async updateEdges(port: number) {
+  private updateEdges(port: number) {
     if (port === this.start) {
-      let _port = this.start + 1;
+      let candidatePort = this.start + 1;
 
-      while ((await this.getPersistentPorts()).has(_port) && !(_port === this.end)) {
-        _port++;
+      while (this.visitedPorts.has(candidatePort) && !(candidatePort === this.end)) {
+        candidatePort++;
       }
 
-      this.start = _port;
+      this.start = candidatePort;
     } else if (port === this.end) {
-      let _port = this.end - 1;
+      let candidatePort = this.end - 1;
 
-      while ((await this.getPersistentPorts()).has(_port) && !(_port === this.start)) {
-        _port--;
+      while (this.visitedPorts.has(candidatePort) && !(candidatePort === this.start)) {
+        candidatePort--;
       }
 
-      this.end = _port;
+      this.end = candidatePort;
     }
   }
 }

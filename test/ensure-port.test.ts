@@ -1,12 +1,15 @@
 import { Ports } from 'ensure-port';
 import { createMemoryFs } from '@file-services/memory';
 import { expect } from 'expect';
-import { getPortsFromCacheDir } from './helpers';
+import { allocatePorts, getPortsFromCacheDir } from './helpers';
 import type { IFileSystem } from '@file-services/types';
 
 describe('ensurePort', () => {
   let ports: Ports;
   let fs: IFileSystem;
+
+  const startPort = 8000;
+  const endPort = 9000;
 
   beforeEach(() => {
     fs = createMemoryFs({
@@ -17,7 +20,11 @@ describe('ensurePort', () => {
       }),
     });
 
-    ports = new Ports({ startPort: 8000, endPort: 9000 }, { fs, rootDir: '/' });
+    ports = new Ports({ startPort, endPort }, { fs, rootDir: '/' });
+  });
+
+  afterEach(async () => {
+    await ports.dispose();
   });
 
   it('should return a port in range', async () => {
@@ -28,18 +35,7 @@ describe('ensurePort', () => {
   });
 
   it('should return a port that has not been used before', async () => {
-    const usedPorts = new Set<number>();
-    let i = 0;
-
-    while (++i <= 1001) {
-      const port = await ports.ensurePort();
-
-      if (usedPorts.has(port)) {
-        throw new Error(`Port ${port} has been used before`);
-      } else {
-        usedPorts.add(port);
-      }
-    }
+    const { usedPorts } = await allocatePorts(endPort - startPort + 1, ports);
 
     expect(usedPorts.size).toBe(1001);
 
@@ -48,5 +44,11 @@ describe('ensurePort', () => {
 
     expect(actualPorts).toEqual(allAvailablePorts);
     expect(actualPorts).toEqual(getPortsFromCacheDir(fs, '/').sort((a, b) => a - b));
+  });
+
+  it('should throw when no ports are available', async () => {
+    await expect(allocatePorts(endPort - startPort + 2, ports)).rejects.toThrowError(
+      'All ports are used between 8000 and 9000'
+    );
   });
 });
