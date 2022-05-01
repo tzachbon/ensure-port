@@ -15,7 +15,8 @@ export interface PortsOptions {
 
 export class Ports {
   private portsPath: string;
-  private visitedPorts: Set<number> = new Set();
+  private totalPorts: Set<number> = new Set();
+  private localPorts: Set<number> = new Set();
   private start: number;
   private end: number;
   private fs: IFileSystem;
@@ -45,7 +46,7 @@ export class Ports {
 
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     this.watchListener = async () => {
-      this.visitedPorts = await this.getPersistentPorts();
+      this.totalPorts = await this.getPersistentPorts();
     };
 
     void this.fs.watchService.watchPath(this.portsPath, this.watchListener);
@@ -84,7 +85,8 @@ export class Ports {
    */
   public async releasePorts(currentPorts?: number[]) {
     await this.updatePersistentPorts((ports) => {
-      for (const port of [...(currentPorts ?? this.visitedPorts)]) {
+      for (const port of [...(currentPorts ?? this.localPorts)]) {
+        this.localPorts.delete(port);
         ports.delete(port);
       }
     });
@@ -98,6 +100,7 @@ export class Ports {
    */
   public async setPort(port: number) {
     await this.updatePersistentPorts((ports) => {
+      this.localPorts.add(port);
       ports.add(port);
     });
   }
@@ -106,7 +109,7 @@ export class Ports {
    * Releases all the ports.
    */
   public async clean() {
-    this.visitedPorts.clear();
+    this.totalPorts.clear();
     await this.fs.promises.rm(this.portsPath, { force: true });
   }
 
@@ -130,7 +133,7 @@ export class Ports {
 
     do {
       port = randomNumberBetween(this.start, this.end);
-    } while (await Promise.resolve(this.visitedPorts.has(port)));
+    } while (await Promise.resolve(this.totalPorts.has(port)));
 
     return port;
   }
@@ -141,20 +144,26 @@ export class Ports {
 
     await callback(newPorts);
 
+    const releasedPorts = new Set<number>();
+
     for (const port of ports) {
       if (newPorts.has(port)) {
         newPorts.delete(port);
         continue;
       }
 
-      await this.fs.promises.rm(this.fs.join(this.portsPath, String(port)), { force: true });
+      releasedPorts.add(port);
     }
+
+    await Promise.all(
+      [...releasedPorts].map((port) => this.fs.promises.rm(this.fs.join(this.portsPath, String(port)), { force: true }))
+    );
 
     await Promise.all(
       [...newPorts].map((port) => this.fs.promises.writeFile(this.fs.join(this.portsPath, String(port)), ''))
     );
 
-    this.visitedPorts = await this.getPersistentPorts();
+    this.totalPorts = await this.getPersistentPorts();
   }
 
   private async getPersistentPorts() {
@@ -166,7 +175,7 @@ export class Ports {
     if (port === this.start) {
       let candidatePort = this.start + 1;
 
-      while (this.visitedPorts.has(candidatePort) && !(candidatePort === this.end)) {
+      while (this.totalPorts.has(candidatePort) && !(candidatePort === this.end)) {
         candidatePort++;
       }
 
@@ -174,7 +183,7 @@ export class Ports {
     } else if (port === this.end) {
       let candidatePort = this.end - 1;
 
-      while (this.visitedPorts.has(candidatePort) && !(candidatePort === this.start)) {
+      while (this.totalPorts.has(candidatePort) && !(candidatePort === this.start)) {
         candidatePort--;
       }
 

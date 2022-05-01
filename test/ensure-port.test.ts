@@ -51,4 +51,15 @@ describe('ensurePort', () => {
       `All ports are used between ${startPort} and ${endPort}`
     );
   });
+
+  it('should release only local ports', async () => {
+    const anotherPorts = new Ports({ startPort, endPort }, { fs, rootDir: '/' });
+
+    await ports.ensurePort();
+    const anotherPort = await anotherPorts.ensurePort();
+
+    await ports.releasePorts();
+
+    expect(getPortsFromCacheDir(fs, '/')).toEqual([anotherPort]);
+  });
 });
