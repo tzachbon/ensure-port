@@ -2,7 +2,7 @@ import type { IFileSystem } from '@file-services/types';
 import type { Ports } from 'ensure-port';
 
 export function getPortsFromCacheDir(fs: IFileSystem, rootDir: string) {
-  const portsPath = fs.resolve(rootDir, 'node_modules', '.cache', 'e2e-test-kit', 'ports');
+  const portsPath = fs.resolve(rootDir, 'node_modules', '.cache', 'ensure-port', 'ports');
   return fs.readdirSync(portsPath, 'utf8').map((port) => Number(port));
 }
 
