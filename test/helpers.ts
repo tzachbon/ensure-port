@@ -13,7 +13,7 @@ export async function allocatePorts(portsLength: number, ports: Ports) {
 
   try {
     while (++i <= portsLength) {
-      port = await ports.ensurePort();
+      port = await ports.ensure();
 
       if (usedPorts.has(port)) {
         throw new Error(`Port ${port} has been used before`);

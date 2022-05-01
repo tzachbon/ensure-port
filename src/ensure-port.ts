@@ -55,7 +55,7 @@ export class Ports {
   /**
    * Returns a reserved port.
    */
-  public async ensurePort() {
+  public async ensure() {
     if (this.initialEdges.reached) {
       throw new Error(`All ports are used between ${this.initialEdges.start} and ${this.initialEdges.end}`);
     }
@@ -68,7 +68,7 @@ export class Ports {
     const { port, httpServer } = await safeListeningHttpServer(preferredPort);
 
     if (port !== preferredPort) {
-      await this.setPort(port);
+      await this.set(port);
     }
 
     await new Promise((resolve, reject) => httpServer.close((error) => (error ? reject(error) : resolve(void 0))));
@@ -83,7 +83,7 @@ export class Ports {
    *
    * @param currentPorts - optional, if provided it will release only these ports
    */
-  public async releasePorts(currentPorts?: number[]) {
+  public async release(currentPorts?: number[]) {
     await this.updatePersistentPorts((ports) => {
       for (const port of [...(currentPorts ?? this.localPorts)]) {
         this.localPorts.delete(port);
@@ -98,7 +98,7 @@ export class Ports {
    *
    * @param port - the port to mark as used
    */
-  public async setPort(port: number) {
+  public async set(port: number) {
     await this.updatePersistentPorts((ports) => {
       this.localPorts.add(port);
       ports.add(port);
@@ -123,7 +123,7 @@ export class Ports {
   private async getPort() {
     const port = await this.getNextPort();
 
-    await this.setPort(port);
+    await this.set(port);
 
     return port;
   }

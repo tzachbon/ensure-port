@@ -28,7 +28,7 @@ describe('ensurePort', () => {
   });
 
   it('should return a port in range', async () => {
-    const port = await ports.ensurePort();
+    const port = await ports.ensure();
 
     expect(port).toBeGreaterThanOrEqual(startPort);
     expect(port).toBeLessThanOrEqual(endPort);
@@ -55,10 +55,10 @@ describe('ensurePort', () => {
   it('should release only local ports', async () => {
     const anotherPorts = new Ports({ startPort, endPort }, { fs, rootDir: '/' });
 
-    await ports.ensurePort();
-    const anotherPort = await anotherPorts.ensurePort();
+    await ports.ensure();
+    const anotherPort = await anotherPorts.ensure();
 
-    await ports.releasePorts();
+    await ports.release();
 
     expect(getPortsFromCacheDir(fs, '/')).toEqual([anotherPort]);
   });
