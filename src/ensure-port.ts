@@ -4,12 +4,31 @@ import type { IFileSystem, WatchEventListener } from '@file-services/types';
 import { findCacheDir } from './find-cache-dir';
 
 export interface PortsParameters {
+  /**
+   * Port to start searching from.
+   */
   startPort?: number;
+
+  /**
+   * Port to end searching at.
+   */
   endPort?: number;
+  /**
+   * Search strategy to look for a new port if one is not available
+   */
+  strategy?: 'random' | 'sequential';
 }
 
 export interface PortsOptions {
+  /**
+   * File system implementation, providing a subset of the original fs methods, a watch service, and path methods.
+   * @default nodeFs
+   * @see https://www.npmjs.com/package/@file-services/node
+   */
   fs?: IFileSystem;
+  /**
+   * Root directory to use for the persistent ports data.
+   */
   rootDir?: string;
 }
 
@@ -23,14 +42,19 @@ export class Ports {
   private rootDir: string;
   private initialEdges: { start: number; end: number; reached: boolean };
   private watchListener: WatchEventListener;
+  private strategy: 'random' | 'sequential';
 
-  constructor({ startPort = 8000, endPort = 9000 }: PortsParameters = {}, options: PortsOptions = {}) {
+  constructor(
+    { startPort = 8000, endPort = 9000, strategy = 'random' }: PortsParameters = {},
+    { fs = nodeFs, rootDir = process.cwd() }: PortsOptions = {}
+  ) {
     this.start = startPort;
     this.end = endPort;
-    this.initialEdges = { start: this.start, end: this.end, reached: false };
+    this.strategy = strategy;
 
-    this.fs = options.fs ?? nodeFs;
-    this.rootDir = options.rootDir ?? process.cwd();
+    this.fs = fs;
+    this.rootDir = rootDir;
+    this.initialEdges = { start: this.start, end: this.end, reached: false };
 
     const tempDir = findCacheDir('ensure-port', { fs: this.fs, rootDir: this.rootDir });
 
@@ -129,10 +153,23 @@ export class Ports {
   }
 
   private async getNextPort() {
-    let port: number;
+    const tried = new Set<number>();
+    let port: number | undefined;
 
     do {
-      port = randomNumberBetween(this.start, this.end);
+      if (this.strategy === 'random') {
+        port = randomNumberBetween(this.start, this.end);
+
+        if (tried.size === this.end - this.start + 1) {
+          throw new Error(`Could not find a free port between ${this.start} and ${this.end}`);
+        }
+
+        tried.add(port);
+      } else if (this.strategy === 'sequential') {
+        port = port ? port + 1 : this.start;
+      } else {
+        throw new Error(`Unknown strategy "${this.strategy}"`);
+      }
     } while (await Promise.resolve(this.totalPorts.has(port)));
 
     return port;

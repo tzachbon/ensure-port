@@ -62,4 +62,11 @@ describe('ensurePort', () => {
 
     expect(getPortsFromCacheDir(fs, '/')).toEqual([anotherPort]);
   });
+
+  it('should return ports in sequential order', async () => {
+    ports = new Ports({ startPort, endPort, strategy: 'sequential' }, { fs, rootDir: '/' });
+
+    expect(await ports.ensure()).toEqual(startPort);
+    expect(await ports.ensure()).toEqual(startPort + 1);
+  });
 });
