@@ -8,8 +8,8 @@ describe('ensurePort', () => {
   let ports: Ports;
   let fs: IFileSystem;
 
-  const startPort = 8000;
-  const endPort = 9000;
+  const startPort = 3000;
+  const endPort = 4000;
 
   beforeEach(() => {
     fs = createMemoryFs({
@@ -30,8 +30,8 @@ describe('ensurePort', () => {
   it('should return a port in range', async () => {
     const port = await ports.ensurePort();
 
-    expect(port).toBeGreaterThan(8000);
-    expect(port).toBeLessThanOrEqual(9000);
+    expect(port).toBeGreaterThanOrEqual(startPort);
+    expect(port).toBeLessThanOrEqual(endPort);
   });
 
   it('should return a port that has not been used before', async () => {
@@ -40,7 +40,7 @@ describe('ensurePort', () => {
     expect(usedPorts.size).toBe(1001);
 
     const actualPorts = [...usedPorts].sort((a, b) => a - b);
-    const allAvailablePorts = Array.from({ length: 1001 }).map((_, i) => 8000 + i);
+    const allAvailablePorts = Array.from({ length: 1001 }).map((_, i) => startPort + i);
 
     expect(actualPorts).toEqual(allAvailablePorts);
     expect(actualPorts).toEqual(getPortsFromCacheDir(fs, '/').sort((a, b) => a - b));
@@ -48,7 +48,7 @@ describe('ensurePort', () => {
 
   it('should throw when no ports are available', async () => {
     await expect(allocatePorts(endPort - startPort + 2, ports)).rejects.toThrowError(
-      'All ports are used between 8000 and 9000'
+      `All ports are used between ${startPort} and ${endPort}`
     );
   });
 });
