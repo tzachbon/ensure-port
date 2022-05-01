@@ -31,14 +31,14 @@ export class Ports {
     this.fs = options.fs ?? nodeFs;
     this.rootDir = options.rootDir ?? process.cwd();
 
-    const tempDir = findCacheDir('e2e-test-kit', { fs: this.fs, rootDir: this.rootDir });
+    const tempDir = findCacheDir('ensure-port', { fs: this.fs, rootDir: this.rootDir });
 
     if (tempDir) {
       this.fs.ensureDirectorySync(tempDir);
     }
 
     if (!tempDir) {
-      throw new Error('Could not find a "e2e-test-kit" temp directory');
+      throw new Error('Could not find a "ensure-port" temp directory');
     }
 
     this.portsPath = this.fs.resolve(tempDir, 'ports');
