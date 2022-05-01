@@ -102,7 +102,7 @@ export class Ports {
   }
 
   /**
-   * Remove releases all the ports.
+   * Releases all the ports.
    */
   public async clean() {
     this.visitedPorts.clear();
