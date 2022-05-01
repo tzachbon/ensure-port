@@ -117,19 +117,19 @@ export class Ports {
   }
 
   private async getPort() {
-    const port = this.getNextPort();
+    const port = await this.getNextPort();
 
     await this.setPort(port);
 
     return port;
   }
 
-  private getNextPort(): number {
-    let port = randomNumberBetween(this.start, this.end);
+  private async getNextPort() {
+    let port: number;
 
-    while (this.visitedPorts.has(port)) {
+    do {
       port = randomNumberBetween(this.start, this.end);
-    }
+    } while (await Promise.resolve(this.visitedPorts.has(port)));
 
     return port;
   }
