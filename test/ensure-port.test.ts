@@ -8,8 +8,8 @@ describe('ensurePort', () => {
   let ports: Ports;
   let fs: IFileSystem;
 
-  const startPort = 1000;
-  const endPort = 2000;
+  const startPort = 8989;
+  const endPort = 9989;
 
   beforeEach(() => {
     fs = createMemoryFs({
