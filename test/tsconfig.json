@@ -1,7 +1,6 @@
 {
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "module": "commonjs",
     "outDir": "../dist/test",
     "types": ["node", "mocha"],
     "paths": {
@@ -10,7 +9,7 @@
   },
   "references": [
     {
-      "path": "../src/tsconfig.cjs.json"
+      "path": "../src/tsconfig.esm.json"
     }
   ]
 }
