@@ -1,6 +1,6 @@
 {
   "name": "ensure-port",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Makes sure you get an available port",
   "main": "dist/cjs/index.js",
   "typings": "dist/mjs/index.d.ts",
