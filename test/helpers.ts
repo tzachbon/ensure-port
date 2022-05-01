@@ -9,15 +9,21 @@ export function getPortsFromCacheDir(fs: IFileSystem, rootDir: string) {
 export async function allocatePorts(portsLength: number, ports: Ports) {
   const usedPorts = new Set<number>();
   let i = 0;
+  let port = -1;
 
-  while (++i <= portsLength) {
-    const port = await ports.ensurePort();
+  try {
+    while (++i <= portsLength) {
+      port = await ports.ensurePort();
 
-    if (usedPorts.has(port)) {
-      throw new Error(`Port ${port} has been used before`);
-    } else {
-      usedPorts.add(port);
+      if (usedPorts.has(port)) {
+        throw new Error(`Port ${port} has been used before`);
+      } else {
+        usedPorts.add(port);
+      }
     }
+  } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+    throw new Error(`Found an error on the ${i} iteration and port ${String(port)}: ${error as Error}`);
   }
 
   return {
