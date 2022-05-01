@@ -1,0 +1,16 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "outDir": "../dist/test",
+    "types": ["node", "mocha"],
+    "paths": {
+      "typed-record": ["../"]
+    }
+  },
+  "references": [
+    {
+      "path": "../src/tsconfig.cjs.json"
+    }
+  ]
+}
