@@ -1,1 +1,1 @@
-export { Ports, PortsOptions, PortsParameters } from './ensure-port';
+export { Ports, PortsOptions, PortsParameters } from './ensure-port.js';

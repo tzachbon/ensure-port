@@ -1,7 +1,7 @@
 import { nodeFs } from '@file-services/node';
 import { safeListeningHttpServer } from 'create-listening-server';
 import type { IFileSystem, WatchEventListener } from '@file-services/types';
-import { findCacheDir } from './find-cache-dir';
+import { findCacheDir } from './find-cache-dir.js';
 
 export interface PortsParameters {
   /**

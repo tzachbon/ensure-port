@@ -1,5 +1,5 @@
 import type { IFileSystem } from '@file-services/types';
-import { packageDirectory } from './package-dir';
+import { packageDirectory } from './package-dir.js';
 
 interface Options {
   fs: IFileSystem;
