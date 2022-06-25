@@ -1,7 +1,7 @@
 import { Ports } from 'ensure-port';
 import { createMemoryFs } from '@file-services/memory';
 import { expect } from 'expect';
-import { allocatePorts, getPortsFromCacheDir } from './helpers';
+import { allocatePorts, getPortsFromCacheDir } from './helpers.js';
 import type { IFileSystem } from '@file-services/types';
 
 describe('ensurePort', () => {

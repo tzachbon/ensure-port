@@ -1,0 +1,7 @@
+{
+  "colors": true,
+  "'enable-source-maps'": true,
+  "timeout": 10000,
+  "experimental-specifier-resolution": "node",
+  "loader": "ts-node/esm"
+}
