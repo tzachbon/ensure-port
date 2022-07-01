@@ -40,7 +40,7 @@
     "@file-services/memory": "^6.0.0",
     "@types/mocha": "^9.1.1",
     "@types/node": "^18.0.0",
-    "@typescript-eslint/eslint-plugin": "^5.29.0",
+    "@typescript-eslint/eslint-plugin": "^5.30.3",
     "@typescript-eslint/parser": "^5.29.0",
     "eslint": "^8.18.0",
     "eslint-config-prettier": "^8.5.0",
