@@ -4,7 +4,7 @@
   "description": "Makes sure you get an available port",
   "type": "module",
   "main": "dist/cjs/index.js",
-  "typings": "dist/mjs/index.d.ts",
+  "typings": "dist/cjs/index.d.ts",
   "module": "dist/mjs/index.js",
   "scripts": {
     "build": "tsc --build",
@@ -19,8 +19,16 @@
     "dist/mjs"
   ],
   "exports": {
-    "import": "./dist/mjs/index.js",
-    "require": "./dist/cjs/index.js"
+    ".": {
+      "import": {
+        "default": "./dist/mjs/index.js",
+        "types": "./dist/mjs/index.d.ts"
+      },
+      "require": {
+        "default": "./dist/cjs/index.js",
+        "types": "./dist/cjs/index.d.ts"
+      }
+    }
   },
   "keywords": [
     "typescript",
