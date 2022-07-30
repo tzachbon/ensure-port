@@ -63,7 +63,7 @@
     "typescript": "^4.7.4"
   },
   "dependencies": {
-    "@file-services/node": "^6.0.0",
+    "@file-services/node": "^7.0.0",
     "@file-services/types": "^6.0.0",
     "create-listening-server": "^1.0.0"
   }
