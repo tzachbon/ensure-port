@@ -11,6 +11,7 @@
     "clean": "rimraf dist",
     "lint": "eslint .",
     "pretest": "npm run build",
+    "prepublishOnly": "node scripts/remove-type-from-package-json.js",
     "test": "mocha \"dist/test/**/*.test.js\" --parallel",
     "watch": "npm run build -- -w"
   },
