@@ -1,6 +1,6 @@
 {
   "name": "ensure-port",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "Makes sure you get an available port",
   "type": "module",
   "main": "dist/cjs/index.js",
