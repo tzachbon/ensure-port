@@ -11,7 +11,6 @@
     "clean": "rimraf dist",
     "lint": "eslint .",
     "pretest": "npm run build",
-    "prepublishOnly": "node scripts/remove-type-from-package-json.js",
     "test": "mocha \"dist/test/**/*.test.js\" --parallel",
     "watch": "npm run build -- -w"
   },
@@ -21,14 +20,10 @@
   ],
   "exports": {
     ".": {
-      "import": {
-        "default": "./dist/mjs/index.js",
-        "types": "./dist/mjs/index.d.ts"
-      },
-      "require": {
-        "default": "./dist/cjs/index.js",
-        "types": "./dist/cjs/index.d.ts"
-      }
+      "import": "./dist/mjs/index.js",
+      "module": "./dist/mjs/index.js",
+      "default": "./dist/cjs/index.js",
+      "types": "./dist/mjs/index.d.ts"
     }
   },
   "keywords": [
