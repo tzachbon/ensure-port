@@ -8,6 +8,7 @@
   "module": "dist/mjs/index.js",
   "scripts": {
     "build": "tsc --build",
+    "postbuild": "node scripts/prepare-output-packages-type",
     "clean": "rimraf dist",
     "lint": "eslint .",
     "pretest": "npm run build",
