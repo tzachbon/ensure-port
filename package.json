@@ -2,6 +2,7 @@
   "name": "ensure-port",
   "version": "1.4.0",
   "description": "Makes sure you get an available port",
+  "type": "module",
   "main": "dist/cjs/index.js",
   "typings": "dist/cjs/index.d.ts",
   "module": "dist/mjs/index.js",
