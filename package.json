@@ -51,7 +51,7 @@
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-no-only-tests": "^3.0.0",
     "expect": "^29.1.2",
-    "jest-util": "^29.1.2",
+    "jest-util": "^29.2.0",
     "mocha": "^10.0.0",
     "pleb": "^5.1.2",
     "rimraf": "^3.0.2",
