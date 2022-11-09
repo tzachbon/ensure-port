@@ -50,7 +50,7 @@
     "eslint": "^8.27.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-no-only-tests": "^3.1.0",
-    "expect": "^29.3.0",
+    "expect": "^29.3.1",
     "jest-util": "^29.2.1",
     "mocha": "^10.1.0",
     "pleb": "^5.1.2",
