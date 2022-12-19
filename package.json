@@ -42,25 +42,25 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@file-services/memory": "^7.0.1",
-    "@types/mocha": "^10.0.0",
-    "@types/node": "^18.11.9",
-    "@typescript-eslint/eslint-plugin": "^5.44.0",
-    "@typescript-eslint/parser": "^5.44.0",
-    "eslint": "^8.28.0",
+    "@file-services/memory": "^7.2.0",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "^18.11.17",
+    "@typescript-eslint/eslint-plugin": "^5.47.0",
+    "@typescript-eslint/parser": "^5.47.0",
+    "eslint": "^8.30.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-no-only-tests": "^3.1.0",
     "expect": "^29.3.1",
     "jest-util": "^29.3.1",
-    "mocha": "^10.1.0",
+    "mocha": "^10.2.0",
     "pleb": "^5.1.2",
     "rimraf": "^3.0.2",
     "ts-expect": "^1.3.0",
-    "typescript": "^4.9.3"
+    "typescript": "^4.9.4"
   },
   "dependencies": {
-    "@file-services/node": "^7.0.1",
-    "@file-services/types": "^7.0.1",
+    "@file-services/node": "^7.2.0",
+    "@file-services/types": "^7.2.0",
     "create-listening-server": "^1.0.0"
   }
 }
