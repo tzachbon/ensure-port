@@ -60,7 +60,7 @@
   },
   "dependencies": {
     "@file-services/node": "^7.2.0",
-    "@file-services/types": "^7.2.0",
+    "@file-services/types": "^7.2.4",
     "create-listening-server": "^1.0.0"
   }
 }
