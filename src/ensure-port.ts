@@ -177,7 +177,7 @@ export class Ports {
 
   private async updatePersistentPorts(callback: (ports: Set<number>) => void | Promise<void>) {
     const ports = await this.getPersistentPorts();
-    const newPorts = new Set(ports);
+    const newPorts = new Set<number>(ports);
 
     await callback(newPorts);
 

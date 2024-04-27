@@ -1,15 +1,10 @@
 {
-  "extends": "../tsconfig.base.json",
+  "extends": "../tsconfig.json",
   "compilerOptions": {
     "outDir": "../dist/test",
     "types": ["node", "mocha"],
     "paths": {
       "ensure-port": ["../"]
     }
-  },
-  "references": [
-    {
-      "path": "../src/tsconfig.esm.json"
-    }
-  ]
+  }
 }
