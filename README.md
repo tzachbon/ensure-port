@@ -24,7 +24,7 @@ const ports = new Ports({
   endPort: 9000,
 });
 
-const port = await ports.ensure(); // This would be a random port between 8000 and 9000 that is not used (validated again file-system and http server)
+const port = await ports.ensure(); // This would be a random port between 8000 and 9000 that is not used (validated against file-system and http server)
 
 // When you finish - remove watcher
 await ports.dispose();
