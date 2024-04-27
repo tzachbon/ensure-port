@@ -19,14 +19,7 @@
     {
       "files": ["*.ts", "*.tsx"],
       "parserOptions": {
-        "project": [
-          "./src/tsconfig.esm.json",
-          "./src/tsconfig.cjs.json",
-          "./test/tsconfig.json",
-          "./tsconfig.base.json",
-          "./tsconfig.json"
-        ],
-        "EXPERIMENTAL_useSourceOfProjectReferenceRedirect": true
+        "EXPERIMENTAL_useProjectService": true
       },
       "extends": [
         "plugin:@typescript-eslint/recommended",
