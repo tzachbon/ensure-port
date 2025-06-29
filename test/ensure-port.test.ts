@@ -23,8 +23,8 @@ describe('ensurePort', () => {
     ports = new Ports({ startPort, endPort }, { fs, rootDir: '/' });
   });
 
-  afterEach(async () => {
-    await ports.dispose();
+  afterEach(() => {
+    ports.dispose();
   });
 
   it('should return a port in range', async () => {

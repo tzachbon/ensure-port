@@ -1,6 +1,6 @@
 import { nodeFs } from '@file-services/node';
 import { safeListeningHttpServer } from 'create-listening-server';
-import type { FSWatcher, IFileSystem, WatchEventListener } from '@file-services/types';
+import type { FSWatcher, IFileSystem } from '@file-services/types';
 import { findCacheDir } from './find-cache-dir.js';
 
 export interface PortsParameters {
@@ -84,7 +84,7 @@ export class Ports {
 
     this.fsListeners.add(
       this.fs.watch(this.portsPath).on('error', (error) => {
-        console.error(`Error watching ports directory: ${error.message}`);
+        throw new Error(`Error watching ports directory: ${error.message}`);
       })
     );
   }
