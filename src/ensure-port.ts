@@ -1,6 +1,6 @@
 import { nodeFs } from '@file-services/node';
 import { safeListeningHttpServer } from 'create-listening-server';
-import type { IFileSystem, WatchEventListener } from '@file-services/types';
+import type { FSWatcher, IFileSystem, WatchEventListener } from '@file-services/types';
 import { findCacheDir } from './find-cache-dir.js';
 
 export interface PortsParameters {
@@ -41,8 +41,8 @@ export class Ports {
   private fs: IFileSystem;
   private rootDir: string;
   private initialEdges: { start: number; end: number; reached: boolean };
-  private watchListener: WatchEventListener;
   private strategy: 'random' | 'sequential';
+  private fsListeners: Set<FSWatcher> = new Set();
 
   constructor(
     { startPort = 8000, endPort = 9000, strategy = 'random' }: PortsParameters = {},
@@ -68,12 +68,25 @@ export class Ports {
 
     this.portsPath = this.fs.resolve(tempDir, 'ports');
 
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    this.watchListener = async () => {
+    const watchListener = async () => {
       this.totalPorts = await this.getPersistentPorts();
     };
 
-    void this.fs.watchService.watchPath(this.portsPath, this.watchListener);
+    this.registerPortChangeListeners(watchListener);
+  }
+
+  private registerPortChangeListeners(watchListener: () => Promise<void>) {
+    this.fsListeners.add(
+      this.fs.watch(this.portsPath).on('change', () => {
+        void watchListener();
+      })
+    );
+
+    this.fsListeners.add(
+      this.fs.watch(this.portsPath).on('error', (error) => {
+        console.error(`Error watching ports directory: ${error.message}`);
+      })
+    );
   }
 
   /**
@@ -141,7 +154,11 @@ export class Ports {
    * Unwatch ports changes
    */
   public dispose() {
-    return this.fs.watchService.unwatchPath(this.portsPath, this.watchListener);
+    for (const watcher of this.fsListeners) {
+      watcher.close();
+    }
+
+    this.fsListeners.clear();
   }
 
   private async getPort() {

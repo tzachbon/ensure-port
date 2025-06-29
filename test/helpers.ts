@@ -22,7 +22,7 @@ export async function allocatePorts(portsLength: number, ports: Ports) {
       }
     }
   } catch (error) {
-    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+     
     throw new Error(`Found an error on the ${i} iteration and port ${String(port)}: ${error as Error}`);
   }
 

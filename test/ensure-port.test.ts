@@ -47,7 +47,7 @@ describe('ensurePort', () => {
   });
 
   it('should throw when no ports are available', async () => {
-    await expect(allocatePorts(endPort - startPort + 2, ports)).rejects.toThrowError(
+    await expect(allocatePorts(endPort - startPort + 2, ports)).rejects.toThrow(
       `All ports are used between ${startPort} and ${endPort}`
     );
   });
